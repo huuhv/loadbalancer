@@ -45,7 +45,7 @@ Demo load balancing with Apache, Nginx, HAproxy
         + if enviroment is development: `npm run dev`
     - Config VirtualHost with port: 8081 or 8082 or 8083
         ```
-        <VirtualHost *:80>
+        <VirtualHost *:8080>
             DocumentRoot /var/www/html/public
             SetEnv HTTPS on
             ServerName $DOMAIN
@@ -67,7 +67,7 @@ Demo load balancing with Apache, Nginx, HAproxy
     - Step 1: Build image
         + `docker build -t loadbalancing -f build/Dockerfile .`
     - Step 2: Run 2 or than 3 containers with same docker image
-        + `docker run -d --name "cms-load-balancing-011" --env-file env.docker  -p "8080":"80" loadbalancing`
+        + `docker run -d --name "cms-load-balancing-01" --env-file env.docker  -p "8080":"80" loadbalancing`
         + `docker run -d --name "cms-load-balancing-02" --env-file env.docker  -p "8081":"80" loadbalancing`
 
 

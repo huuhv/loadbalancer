@@ -19,6 +19,11 @@ _artisan() {
   php artisan "$@"
 }
 
+_query() {
+  _log "query: $*"
+  mysql -h ${DB_HOST} -u${DB_USERNAME} -p${DB_PASSWORD} ${DB_DATABASE} -N -B -e "$*"
+}
+
 app_key() {
   local result=$(_artisan key:generate --force --show)
   echo "APP_KEY=${result}" >> ${APP_HOME}/.env
@@ -28,11 +33,22 @@ config() {
   _artisan config:clear
 }
 
+seeder() {
+  local result=$(_query "select id, email from staff_accounts where email = 'admin@example.com'")
+  # _log "${result}"
+  if [ -z "${result}" ]; then
+    _artisan db:seed --class UserSeeder --force
+  fi
+}
+
+migrate() {
+  # must be force option in production mode
+  _artisan migrate --force
+}
+
 httpd() {
   local httpd_conf=/etc/httpd/conf.d
   sed -i -e "s/\$DOMAIN/${DOMAIN}/" ${httpd_conf}/loadbalancing.conf
-  sed -i "s/\$CONTAINER_ID/${container_id}/" ${httpd_conf}/loadbalancing.conf
-  sed -i "s/\$FLUENTD_TAG/${FLUENTD_TAG}/" ${httpd_conf}/loadbalancing.conf
   sed -i "s|#ServerName www\.example\.com:80|ServerName $HOSTNAME:80|g" /etc/httpd/conf/httpd.conf
 }
 
@@ -49,6 +65,8 @@ main() {
   httpd
   app_key
   config
+  migrate
+  seeder
   get_latest_commit
   _log "exec: $@"
   exec "$@"
