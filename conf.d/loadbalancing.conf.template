@@ -2,8 +2,10 @@
     DocumentRoot /var/www/html/public
     #SetEnv HTTPS on
     ServerName $DOMAIN
-    ErrorLog /var/log/httpd/error.log
+    ErrorLog /var/log/httpd/error_80.log
+    ErrorLogFormat "{\"log_id\":\"apache/error.log\", \"container_id\": \"$CONTAINER_ID\", \"log\": \"[%t] [%l] [pid %P] %F: %E: [client %a] %M\"}"
     CustomLog /var/log/httpd/access.log combinedcustomized
+    LogFormat "{\"log_id\":\"apache/access.log\", \"container_id\": \"$CONTAINER_ID\", \"log\":{ \"time\":\"%t\", \"remoteIP\":\"%a\", \"host\":\"%V\", \"request\":\"%U\", \"query\":\"%q\", \"method\":\"%m\", \"status\":\"%>s\", \"userAgent\":\"%{User-agent}i\", \"referer\":\"%{Referer}i\" }}" combinedcustomized
     <Directory "/var/www/html/public">
         Options -Indexes
         AllowOverride All

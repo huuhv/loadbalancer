@@ -56,6 +56,10 @@ RUN yum update -y && yum install -y \
     && yum clean all \
     && rm -rf /var/cache/yum
 
+# Install Mysql-5.7
+RUN yum install -y https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+RUN yum install -y mysql-community-client
+
 # Composerインストール
 RUN curl -sS https://getcomposer.org/installer | \
     php -- --install-dir=/usr/local/bin/ --filename=composer
@@ -88,5 +92,6 @@ EXPOSE 80
 
 COPY build/docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
+RUN chmod +x /docker-entrypoint.sh
 
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
